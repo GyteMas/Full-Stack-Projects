@@ -1,0 +1,224 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2025-02-11 15:49:16
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 215 (class 1259 OID 17285)
+-- Name: appointments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.appointments (
+    id SERIAL NOT NULL,
+    user_id integer NOT NULL,
+    pet_name character varying(100) NOT NULL,
+    date timestamp with time zone NOT NULL,
+    status character varying(20) DEFAULT 'Pending'::character varying,
+    rating integer,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    description text,
+    CONSTRAINT appointments_rating_check CHECK (((rating >= 1) AND (rating <= 5))),
+    CONSTRAINT appointments_status_check CHECK (((status)::text = ANY (ARRAY[('Pending'::character varying)::text, ('Confirmed'::character varying)::text, ('Closed'::character varying)::text])))
+);
+
+
+ALTER TABLE public.appointments OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 17292)
+-- Name: appointments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.appointments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.appointments_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4860 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: appointments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.appointments_id_seq OWNED BY public.appointments.id;
+
+
+--
+-- TOC entry 217 (class 1259 OID 17293)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id SERIAL NOT NULL,
+    name character varying(100) NOT NULL,
+    email character varying(150) NOT NULL,
+    password text NOT NULL,
+    role character varying(10) NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT users_role_check CHECK (((role)::text = ANY (ARRAY[('user'::character varying)::text, ('admin'::character varying)::text])))
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 17300)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4861 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- TOC entry 4693 (class 2604 OID 17301)
+-- Name: appointments id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.appointments ALTER COLUMN id SET DEFAULT nextval('public.appointments_id_seq'::regclass);
+
+
+--
+-- TOC entry 4696 (class 2604 OID 17302)
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- TOC entry 4851 (class 0 OID 17285)
+-- Dependencies: 215
+-- Data for Name: appointments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.appointments (id, user_id, pet_name, date, status, rating, created_at, description) FROM stdin;
+4	8	Linda	2024-02-13 04:45:00-08	Closed	3	2025-02-06 23:37:08.584763	Lucy has been gaining weight despite a regular diet.
+5	5	Charlie	2024-02-06 06:00:00-08	Closed	3	2025-02-06 23:37:08.584763	Charlie has been vomiting occasionally and has diarrhea.
+6	6	Grafas	2024-02-08 01:30:00-08	Confirmed	\N	2025-02-06 23:37:08.584888	Grafas has been limping and showing stiffness in his hips.
+3	8	Bella	2024-02-04 23:15:00-08	Closed	4	2025-02-06 23:37:08.584763	Bella has been sneezing and scratching more frequently.
+2	8	Milo	2024-02-11 01:30:00-08	Confirmed	\N	2025-02-06 23:37:08.584763	Milo has been chewing excessively on furniture and toys.
+\.
+
+
+--
+-- TOC entry 4853 (class 0 OID 17293)
+-- Dependencies: 217
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, name, email, password, role, created_at) FROM stdin;
+1	John Doe	john@example.com	$argon2id$v=19$m=65536,t=3,p=4$Ik6AxQXLDoUkGyRUEv6Uhw$dWH3Ll5N9YUApccAFUbCTZnXbm5JOcz+B3wEy9QKMPY	user	2025-02-06 23:37:08.584763
+2	Jane Smith	jane@example.com	$argon2id$v=19$m=65536,t=3,p=4$Ik6AxQXLDoUkGyRUEv6Uhw$dWH3Ll5N9YUApccAFUbCTZnXbm5JOcz+B3wEy9QKMPY	user	2025-02-06 23:37:08.584763
+3	Admin User	admin@example.com	$argon2id$v=19$m=65536,t=3,p=4$Ik6AxQXLDoUkGyRUEv6Uhw$dWH3Ll5N9YUApccAFUbCTZnXbm5JOcz+B3wEy9QKMPY	admin	2025-02-06 23:37:08.584763
+4	Alice Brown	alice@example.com	$argon2id$v=19$m=65536,t=3,p=4$Ik6AxQXLDoUkGyRUEv6Uhw$dWH3Ll5N9YUApccAFUbCTZnXbm5JOcz+B3wEy9QKMPY	user	2025-02-06 23:37:08.584763
+5	Bob White	bob@example.com	$argon2id$v=19$m=65536,t=3,p=4$Ik6AxQXLDoUkGyRUEv6Uhw$dWH3Ll5N9YUApccAFUbCTZnXbm5JOcz+B3wEy9QKMPY	user	2025-02-06 23:37:08.584763
+8	Testas Testauskas	testas@gmail.com	$argon2id$v=19$m=65536,t=3,p=4$CJf0+2H/F1MyywwoV0D2Ng$IOrpFBX6JIA2JYiSYoz4EbJwk6EfHm5xsfG7Ku5W6W4	user	2025-02-08 10:21:51.488863
+9	Testas Testauskas	testas1@gmail.com	$argon2id$v=19$m=65536,t=3,p=4$Yrf0kHvBX/+A64ox6h1cJg$4+l6DhU+BQd6vW5V3XW/HJLuF/g/zT1QHsCNr4pRvHs	user	2025-02-08 10:24:28.963872
+10	Testas Testauskas	testas2@gmail.com	$argon2id$v=19$m=65536,t=3,p=4$GyzDHbdSLiUSeVIlJWWacA$OWHivQW7TTSTClxMrdzsX3EeQOMvt9A0m5hGEm/Qbf0	user	2025-02-08 11:02:44.50176
+6	Gyte Maslinskiene	gyte@example.com	$argon2id$v=19$m=65536,t=3,p=4$XjbW99enQNJP+IF3MkQgfg$OsknopJVPKL3zR/0tx+djAGyP7NjEv5by8EWqrKlu10	user	2025-02-07 09:41:43.654232
+7	Gyte Maslinskiene	g.maslinskiene@gmail.com	$argon2id$v=19$m=65536,t=3,p=4$WMO9RKLS3WvrVmvINwA5/w$ddkbZfSyLohfO4PIw5mxYoZmQTUdmQ60TR33/I0Kkxg	admin	2025-02-08 10:03:20.82467
+\.
+
+
+--
+-- TOC entry 4862 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: appointments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.appointments_id_seq', 1, false);
+
+
+--
+-- TOC entry 4863 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 10, true);
+
+
+--
+-- TOC entry 4702 (class 2606 OID 17304)
+-- Name: appointments appointments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.appointments
+    ADD CONSTRAINT appointments_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4704 (class 2606 OID 17306)
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- TOC entry 4706 (class 2606 OID 17308)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4707 (class 2606 OID 17309)
+-- Name: appointments appointments_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.appointments
+    ADD CONSTRAINT appointments_user_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+-- Completed on 2025-02-11 15:49:16
+
+--
+-- PostgreSQL database dump complete
+--
+
